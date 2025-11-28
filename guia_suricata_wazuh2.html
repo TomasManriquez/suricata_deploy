@@ -1,0 +1,1065 @@
+
+Guia-Suricata-Wazuh.html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integración Suricata + Wazuh | Guía Profesional</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1E40AF;
+            --primary-dark: #0F2F5C;
+            --primary-light: #0EA5E9;
+            --bg-light: #F8FAFC;
+            --bg-white: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-gray: #64748B;
+            --border: #E2E8F0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #F8FAFC 0%, #F0F9FF 100%);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        /* Header/Navigation */
+        header {
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-gray);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            color: var(--text-gray);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Table of Contents */
+        .toc-section {
+            background: var(--bg-white);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            margin: 3rem auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 4px solid var(--primary);
+        }
+
+        .toc-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .toc-item {
+            padding: 1.5rem;
+            background: var(--bg-light);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .toc-item:hover {
+            background: var(--bg-white);
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.1);
+        }
+
+        .toc-item h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .toc-item p {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        /* Section Styling */
+        .section {
+            background: var(--bg-white);
+            border-radius: 1rem;
+            padding: 3rem;
+            margin: 2rem auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            scroll-margin-top: 80px;
+        }
+
+        .section h2 {
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section h3 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .section h4 {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+        }
+
+        li strong {
+            color: var(--primary);
+        }
+
+        /* Code Blocks */
+        pre {
+            background: var(--primary-dark);
+            color: #E0E7FF;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary-light);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+
+        .inline-code {
+            background: var(--bg-light);
+            color: var(--primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-light);
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-light);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary-light);
+        }
+
+        .card.warning {
+            border-left-color: var(--warning);
+            background: #FFFBEB;
+        }
+
+        .card.danger {
+            border-left-color: var(--danger);
+            background: #FEF2F2;
+        }
+
+        .card.success {
+            border-left-color: var(--success);
+            background: #F0FDF4;
+        }
+
+        .card h4 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Grid Layout */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist li {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: var(--bg-light);
+            border-radius: 0.5rem;
+            border-left: 3px solid var(--primary);
+            padding-left: 1rem;
+        }
+
+        .checklist li:before {
+            content: "☐ ";
+            color: var(--primary);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        /* Step Numbers */
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .step {
+            display: flex;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            align-items: flex-start;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
+            margin-top: 0;
+        }
+
+        /* Badges and Tags */
+        .tag {
+            display: inline-block;
+            background: var(--bg-light);
+            color: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+            margin: 0.25rem;
+            border: 1px solid var(--primary-light);
+        }
+
+        /* Architecture Diagram */
+        .architecture {
+            background: var(--bg-light);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 2px dashed var(--primary-light);
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            overflow-x: auto;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-dark);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            border-top: 4px solid var(--primary-light);
+        }
+
+        footer p {
+            margin: 0.5rem 0;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--primary-light);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        /* Button */
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.2rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .section h2 {
+                font-size: 1.8rem;
+            }
+
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+
+            pre {
+                font-size: 0.8rem;
+                padding: 1rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .section {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid var(--border);
+            }
+
+            header, footer {
+                display: none;
+            }
+        }
+
+        /* Icon */
+        .icon {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">Suricata + Wazuh</div>
+            <ul class="nav-links">
+                <li><a href="#intro">Introducción</a></li>
+                <li><a href="#arquitectura">Arquitectura</a></li>
+                <li><a href="#instalacion">Instalación</a></li>
+                <li><a href="#configuracion">Configuración</a></li>
+                <li><a href="#validacion">Validación</a></li>
+                <li><a href="#troubleshooting">Troubleshooting</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="badge">Guía Profesional v1.0</span>
+            <h1>Integración de Suricata con Wazuh</h1>
+            <p>Detecta amenazas de red en tiempo real. Centraliza, correlaciona y responde automáticamente a eventos de seguridad.</p>
+            <button class="btn">Comenzar →</button>
+        </div>
+    </section>
+
+    <!-- Table of Contents -->
+    <div class="container">
+        <section class="toc-section">
+            <h2>
+                <span class="icon">📋</span>
+                Contenidos de la Guía
+            </h2>
+            <div class="toc-grid">
+                <div class="toc-item">
+                    <h3>1. Introducción</h3>
+                    <p>Contexto, beneficios y versiones soportadas de ambas herramientas.</p>
+                </div>
+                <div class="toc-item">
+                    <h3>2. Arquitectura</h3>
+                    <p>Flujo de datos, componentes principales y cómo interactúan.</p>
+                </div>
+                <div class="toc-item">
+                    <h3>3. Prerrequisitos</h3>
+                    <p>Hardware, software, networking y checklist de verificación previa.</p>
+                </div>
+                <div class="toc-item">
+                    <h3>4. Instalación</h3>
+                    <p>Pasos detallados para Ubuntu, CentOS y Wazuh Agent.</p>
+                </div>
+                <div class="toc-item">
+                    <h3>5. Configuración</h3>
+                    <p>Tuning de Suricata, descarga de reglas e integración con Wazuh.</p>
+                </div>
+                <div class="toc-item">
+                    <h3>6. Validación</h3>
+                    <p>Testing end-to-end y visualización en dashboard.</p>
+                </div>
+                <div class="toc-item">
+                    <h3>7. Troubleshooting</h3>
+                    <p>Resolución de problemas comunes con soluciones.</p>
+                </div>
+                <div class="toc-item">
+                    <h3>8. Mantenimiento</h3>
+                    <p>Monitoreo continuo, actualizaciones y mejores prácticas.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Intro Section -->
+    <section id="intro" class="section container">
+        <h2>
+            <span class="icon">🎯</span>
+            Introducción
+        </h2>
+        
+        <h3>Propósito de esta Guía</h3>
+        <p>Este documento proporciona una guía técnica completa y validada para integrar Suricata (Sistema de Detección/Prevención de Intrusiones) con Wazuh (Plataforma de Monitoreo y Seguridad). La integración permite centralizar la detección de amenazas de red y correlacionar eventos en una plataforma de seguridad unificada.</p>
+
+        <h3>Beneficios Clave</h3>
+        <div class="grid-3">
+            <div class="card">
+                <h4><span class="icon">✓</span> Detección Centralizada</h4>
+                <p>Eventos de red y seguridad en una plataforma única y coherente.</p>
+            </div>
+            <div class="card success">
+                <h4><span class="icon">✓</span> Correlación Automática</h4>
+                <p>Identifica patrones de ataque multi-fase que herramientas individuales pierden.</p>
+            </div>
+            <div class="card success">
+                <h4><span class="icon">✓</span> Respuesta Automatizada</h4>
+                <p>Active Response ejecuta acciones defensivas sin intervención manual.</p>
+            </div>
+            <div class="card success">
+                <h4><span class="icon">✓</span> Visualización Unificada</h4>
+                <p>Dashboard profesional con filtrado avanzado y threat hunting.</p>
+            </div>
+            <div class="card success">
+                <h4><span class="icon">✓</span> Compliance</h4>
+                <p>Generación de reportes para auditorías y normativas.</p>
+            </div>
+            <div class="card success">
+                <h4><span class="icon">✓</span> Escalabilidad</h4>
+                <p>Arquitectura que crece con tu organización.</p>
+            </div>
+        </div>
+
+        <h3>Versiones Soportadas</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Componente</th>
+                    <th>Versión Mínima</th>
+                    <th>Versión Recomendada</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Suricata</strong></td>
+                    <td>6.0.8</td>
+                    <td>7.0.x</td>
+                    <td><span class="tag">Soportado</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Wazuh Agent</strong></td>
+                    <td>4.7.0</td>
+                    <td>4.7.x</td>
+                    <td><span class="tag">Recomendado</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Wazuh Manager</strong></td>
+                    <td>4.7.0</td>
+                    <td>4.7.x</td>
+                    <td><span class="tag">Recomendado</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Ubuntu</strong></td>
+                    <td>20.04 LTS</td>
+                    <td>22.04 LTS</td>
+                    <td><span class="tag">Validado</span></td>
+                </tr>
+                <tr>
+                    <td><strong>CentOS/Rocky</strong></td>
+                    <td>8</td>
+                    <td>9</td>
+                    <td><span class="tag">Validado</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="arquitectura" class="section container">
+        <h2>
+            <span class="icon">🏗️</span>
+            Arquitectura de la Solución
+        </h2>
+
+        <h3>Flujo de Datos</h3>
+        <div class="architecture">
+┌─────────────────────────────────────┐
+│   ENDPOINT CON SURICATA             │
+│   Tráfico de Red → [Suricata IDS]   │
+│         ↓                            │
+│    /var/log/suricata/eve.json       │
+└──────────────┬──────────────────────┘
+               │ (Lectura local)
+               ↓
+┌──────────────────────────────────────┐
+│   WAZUH AGENT (Mismo Endpoint)      │
+│   Lee eve.json → Parsea JSON        │
+│   Envía a Manager (TCP 1514)        │
+└──────────────┬──────────────────────┘
+               │ (SSL/TLS)
+               ↓
+┌──────────────────────────────────────┐
+│   WAZUH MANAGER (Central)           │
+│   Recibe → Decodifica JSON →        │
+│   Aplica Reglas → Dashboard         │
+└──────────────────────────────────────┘
+        </div>
+
+        <h3>Componentes Principales</h3>
+        <div class="grid-2">
+            <div class="card">
+                <h4>Suricata (Fuente)</h4>
+                <p>Herramienta de detección de intrusiones (IDS) que analiza tráfico de red en tiempo real y genera alertas en formato JSON.</p>
+                <p><strong>Función:</strong> Capturar y analizar paquetes</p>
+            </div>
+            <div class="card">
+                <h4>Wazuh Agent (Conector)</h4>
+                <p>Agente ligero que monitorea archivos locales y envía datos de forma segura al Manager de Wazuh.</p>
+                <p><strong>Función:</strong> Recolectar y transmitir eventos</p>
+            </div>
+            <div class="card">
+                <h4>Wazuh Manager (Procesador)</h4>
+                <p>Servidor central que recibe eventos, aplica decoders y reglas, y correlaciona para detección de amenazas complejas.</p>
+                <p><strong>Función:</strong> Procesar y correlacionar</p>
+            </div>
+            <div class="card">
+                <h4>Dashboard (Visualización)</h4>
+                <p>Interfaz web que presenta alertas, permite filtrado avanzado y facilita threat hunting profesional.</p>
+                <p><strong>Función:</strong> Visualizar y analizar</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section id="instalacion" class="section container">
+        <h2>
+            <span class="icon">⚙️</span>
+            Instalación de Componentes
+        </h2>
+
+        <h3>Suricata en Ubuntu 22.04</h3>
+        
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h4>Agregar Repositorio Oficial</h4>
+                <pre><code>sudo add-apt-repository ppa:oisf/suricata-stable</code></pre>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h4>Actualizar Índice de Paquetes</h4>
+                <pre><code>sudo apt-get update</code></pre>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h4>Instalar Suricata</h4>
+                <pre><code>sudo apt-get install suricata -y</code></pre>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <h4>Verificar Instalación</h4>
+                <pre><code>suricata --version</code></pre>
+                <p><em>Salida esperada: Suricata Version X.X.X</em></p>
+            </div>
+        </div>
+
+        <div class="card warning">
+            <h4>⚠️ Para CentOS/RHEL</h4>
+            <p>Usa <span class="inline-code">dnf copr enable @oisf/suricata-6.0</span> en lugar del repositorio PPA. Consulta la guía completa en PDF para pasos detallados.</p>
+        </div>
+    </section>
+
+    <!-- Configuration Section -->
+    <section id="configuracion" class="section container">
+        <h2>
+            <span class="icon">⚡</span>
+            Configuración Detallada
+        </h2>
+
+        <h3>Configurar suricata.yaml</h3>
+        
+        <h4>Paso 1: Hacer Backup</h4>
+        <pre><code>sudo cp /etc/suricata/suricata.yaml /etc/suricata/suricata.yaml.backup</code></pre>
+
+        <h4>Paso 2: Editar Configuración</h4>
+        <pre><code>sudo nano /etc/suricata/suricata.yaml</code></pre>
+
+        <h4>Paso 3: Configurar Variables de Red</h4>
+        <pre><code>vars:
+  address-groups:
+    HOME_NET: "[192.168.1.0/24]"  # Tu red interna
+    EXTERNAL_NET: "any"</code></pre>
+
+        <h4>Paso 4: Especificar Interfaz de Red</h4>
+        <p>Primero, identifica tu interfaz:</p>
+        <pre><code>ip addr</code></pre>
+        
+        <p>Luego configura en <span class="inline-code">suricata.yaml</span>:</p>
+        <pre><code>af-packet:
+  - interface: enp0s3  # Cambiar según tu interfaz
+    cluster-id: 99</code></pre>
+
+        <h4>Paso 5: Habilitar EVE JSON (CRÍTICO)</h4>
+        <pre><code>outputs:
+  - eve-log:
+      enabled: yes
+      filename: eve.json
+      types:
+        - alert
+        - http
+        - dns
+        - tls
+        - flow</code></pre>
+
+        <div class="card success">
+            <h4>✓ Validar Configuración</h4>
+            <pre><code>sudo suricata -T -c /etc/suricata/suricata.yaml -v</code></pre>
+            <p><em>Deberías ver: "All OK, Suricata is ready to go!"</em></p>
+        </div>
+
+        <h3>Integración con Wazuh Agent</h3>
+
+        <h4>Editar ossec.conf</h4>
+        <pre><code>sudo nano /var/ossec/etc/ossec.conf</code></pre>
+
+        <h4>Agregar Sección de Archivo Local</h4>
+        <pre><code>&lt;localfile&gt;
+  &lt;log_format&gt;json&lt;/log_format&gt;
+  &lt;location&gt;/var/log/suricata/eve.json&lt;/location&gt;
+&lt;/localfile&gt;</code></pre>
+
+        <div class="card danger">
+            <h4>⚠️ Importante</h4>
+            <p>La ruta <span class="inline-code">/var/log/suricata/eve.json</span> debe ser EXACTA. Cualquier discrepancia causará que el agente no encuentre el archivo.</p>
+        </div>
+    </section>
+
+    <!-- Validation Section -->
+    <section id="validacion" class="section container">
+        <h2>
+            <span class="icon">✅</span>
+            Validación y Testing
+        </h2>
+
+        <h3>Verificación de Componentes</h3>
+
+        <div class="card">
+            <h4>1. Confirmar que Suricata está Generando Alertas</h4>
+            <pre><code>tail -f /var/log/suricata/eve.json | jq '.event_type'</code></pre>
+        </div>
+
+        <div class="card">
+            <h4>2. Generar Tráfico de Prueba</h4>
+            <pre><code>curl http://testmynids.org/uid/index.html</code></pre>
+            <p><em>Este comando desencadena una firma de prueba legítima sin ser un ataque real.</em></p>
+        </div>
+
+        <div class="card success">
+            <h4>3. Verificar en Wazuh Dashboard</h4>
+            <ol>
+                <li>Accede a <span class="inline-code">https://IP_WAZUH_MANAGER</span></li>
+                <li>Ve a <strong>Security Events</strong></li>
+                <li>En la barra de búsqueda, ingresa: <span class="inline-code">rule.groups:suricata</span></li>
+                <li>Deberías ver eventos listados dentro de 1-2 minutos</li>
+            </ol>
+        </div>
+
+        <h3>Checklist de Validación</h3>
+        <ul class="checklist">
+            <li>eve.json se está generando y tiene contenido</li>
+            <li>Wazuh Agent está ejecutándose sin errores</li>
+            <li>Conectividad entre Agent y Manager verificada</li>
+            <li>Eventos aparecen en dashboard después de la prueba</li>
+            <li>Filtro rule.groups:suricata devuelve resultados</li>
+        </ul>
+    </section>
+
+    <!-- Troubleshooting Section -->
+    <section id="troubleshooting" class="section container">
+        <h2>
+            <span class="icon">🔧</span>
+            Resolución de Problemas
+        </h2>
+
+        <h3>eve.json no se genera o está vacío</h3>
+        <div class="card warning">
+            <h4>Síntoma</h4>
+            <p>Archivo no existe o muestra 0 líneas</p>
+            
+            <h4>Solución</h4>
+            <pre><code># Verificar que Suricata está ejecutándose
+sudo systemctl status suricata
+
+# Revisar logs de error
+sudo tail -50 /var/log/suricata/suricata.log
+
+# Validar configuración
+sudo suricata -T -c /etc/suricata/suricata.yaml -v
+
+# Asegurar permisos
+sudo chown -R suricata:suricata /var/log/suricata/
+sudo chmod 755 /var/log/suricata/
+
+# Reiniciar
+sudo systemctl restart suricata</code></pre>
+        </div>
+
+        <h3>Interfaz de Red Incorrecta</h3>
+        <div class="card danger">
+            <h4>Síntoma</h4>
+            <p><span class="inline-code">[ERRCODE: SC_ERR_AFP_CREATE(190)] - Unable to find iface eth0</span></p>
+            
+            <h4>Solución</h4>
+            <pre><code># Listar interfaces reales
+ip addr show
+
+# Actualizar suricata.yaml con interfaz correcta
+sudo nano /etc/suricata/suricata.yaml
+
+# Buscar "af-packet:" y cambiar "interface: enp0s3"
+
+# Validar y reiniciar
+sudo suricata -T -c /etc/suricata/suricata.yaml -v
+sudo systemctl restart suricata</code></pre>
+        </div>
+
+        <h3>Wazuh Agent no Lee eve.json</h3>
+        <div class="card danger">
+            <h4>Síntoma</h4>
+            <p><span class="inline-code">ERROR: Cannot read file: /var/log/suricata/eve.json</span></p>
+            
+            <h4>Solución</h4>
+            <pre><code># Verificar permisos
+ls -l /var/log/suricata/eve.json
+
+# Corregir si es necesario
+sudo chown root:wazuh /var/log/suricata/eve.json
+sudo chmod 640 /var/log/suricata/eve.json
+
+# Reiniciar agent
+sudo systemctl restart wazuh-agent</code></pre>
+        </div>
+    </section>
+
+    <!-- Best Practices Section -->
+    <section class="section container">
+        <h2>
+            <span class="icon">⭐</span>
+            Mejores Prácticas
+        </h2>
+
+        <h3>Configuración</h3>
+        <div class="grid-2">
+            <div class="card success">
+                <h4>✓ HACER</h4>
+                <ul>
+                    <li>Hacer backup antes de cambios</li>
+                    <li>Validar sintaxis antes de reiniciar</li>
+                    <li>Documentar cambios y fechas</li>
+                    <li>Probar en ambiente no-producción</li>
+                </ul>
+            </div>
+            <div class="card danger">
+                <h4>✗ NO HACER</h4>
+                <ul>
+                    <li>Editar sin backup</li>
+                    <li>Recargar sin validar sintaxis</li>
+                    <li>Usar permisos 777 en configs</li>
+                    <li>Ignorar logs de error</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Mantenimiento</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tarea</th>
+                    <th>Frecuencia</th>
+                    <th>Comando</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Actualizar reglas</td>
+                    <td>Mensual</td>
+                    <td><span class="inline-code">sudo suricata-update</span></td>
+                </tr>
+                <tr>
+                    <td>Backup configuración</td>
+                    <td>Semanal</td>
+                    <td><span class="inline-code">sudo cp -r /etc/suricata/ /backup/</span></td>
+                </tr>
+                <tr>
+                    <td>Revisar métricas</td>
+                    <td>Diaria</td>
+                    <td>Dashboard Wazuh</td>
+                </tr>
+                <tr>
+                    <td>Rotación de logs</td>
+                    <td>Automática</td>
+                    <td>logrotate (configurado)</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Resources Section -->
+    <section class="section container">
+        <h2>
+            <span class="icon">📚</span>
+            Referencias y Recursos
+        </h2>
+
+        <div class="grid-2">
+            <div class="card">
+                <h4>Documentación Oficial</h4>
+                <ul>
+                    <li><a href="https://documentation.wazuh.com/" target="_blank">Wazuh Docs ↗</a></li>
+                    <li><a href="https://docs.suricata.io/" target="_blank">Suricata Docs ↗</a></li>
+                    <li><a href="https://rules.emergingthreats.net/" target="_blank">Emerging Threats ↗</a></li>
+                    <li><a href="https://attack.mitre.org/" target="_blank">MITRE ATT&CK ↗</a></li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>Comunidades</h4>
+                <ul>
+                    <li><a href="https://github.com/wazuh" target="_blank">Wazuh GitHub ↗</a></li>
+                    <li><a href="https://forum.suricata.io/" target="_blank">Suricata Forum ↗</a></li>
+                    <li><a href="https://reddit.com/r/Wazuh/" target="_blank">r/Wazuh ↗</a></li>
+                    <li><a href="https://reddit.com/r/Suricata/" target="_blank">r/Suricata ↗</a></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>Guía Profesional: Integración Suricata + Wazuh</strong></p>
+        <p>Documento técnico versión 1.0 | Actualizado: Noviembre 28, 2025</p>
+        <p style="font-size: 0.9rem; margin-top: 1rem;">Para equipos de seguridad defensiva, SOC y administradores de sistemas</p>
+        <div class="footer-links">
+            <a href="#intro">Inicio</a>
+            <a href="#arquitectura">Arquitectura</a>
+            <a href="#instalacion">Instalación</a>
+            <a href="#configuracion">Configuración</a>
+            <a href="#validacion">Validación</a>
+            <a href="#troubleshooting">Troubleshooting</a>
+        </div>
+    </footer>
+
+</body>
+</html>
