@@ -1,7 +1,7 @@
-
 Guia-Suricata-Wazuh.html
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,7 +42,7 @@ Guia-Suricata-Wazuh.html
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         nav {
@@ -130,7 +130,7 @@ Guia-Suricata-Wazuh.html
             border-radius: 1rem;
             padding: 2.5rem;
             margin: 3rem auto;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             border-left: 4px solid var(--primary);
         }
 
@@ -182,7 +182,7 @@ Guia-Suricata-Wazuh.html
             border-radius: 1rem;
             padding: 3rem;
             margin: 2rem auto;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             scroll-margin-top: 80px;
         }
 
@@ -213,7 +213,8 @@ Guia-Suricata-Wazuh.html
         }
 
         /* Lists */
-        ul, ol {
+        ul,
+        ol {
             margin-left: 2rem;
             margin-bottom: 1.5rem;
         }
@@ -260,7 +261,7 @@ Guia-Suricata-Wazuh.html
             margin: 2rem 0;
             border-radius: 0.75rem;
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         thead {
@@ -268,7 +269,8 @@ Guia-Suricata-Wazuh.html
             color: white;
         }
 
-        th, td {
+        th,
+        td {
             padding: 1rem;
             text-align: left;
         }
@@ -503,7 +505,8 @@ Guia-Suricata-Wazuh.html
                 border: 1px solid var(--border);
             }
 
-            header, footer {
+            header,
+            footer {
                 display: none;
             }
         }
@@ -522,9 +525,9 @@ Guia-Suricata-Wazuh.html
             font-weight: bold;
             font-size: 0.9rem;
         }
-
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <header>
@@ -546,7 +549,8 @@ Guia-Suricata-Wazuh.html
         <div class="hero-content">
             <span class="badge">Guía Profesional v1.0</span>
             <h1>Integración de Suricata con Wazuh</h1>
-            <p>Detecta amenazas de red en tiempo real. Centraliza, correlaciona y responde automáticamente a eventos de seguridad.</p>
+            <p>Detecta amenazas de red en tiempo real. Centraliza, correlaciona y responde automáticamente a eventos de
+                seguridad.</p>
             <button class="btn">Comenzar →</button>
         </div>
     </section>
@@ -601,9 +605,12 @@ Guia-Suricata-Wazuh.html
             <span class="icon">🎯</span>
             Introducción
         </h2>
-        
+
         <h3>Propósito de esta Guía</h3>
-        <p>Este documento proporciona una guía técnica completa y validada para integrar Suricata (Sistema de Detección/Prevención de Intrusiones) con Wazuh (Plataforma de Monitoreo y Seguridad). La integración permite centralizar la detección de amenazas de red y correlacionar eventos en una plataforma de seguridad unificada.</p>
+        <p>Este documento proporciona una guía técnica completa y validada para integrar Suricata (Sistema de
+            Detección/Prevención de Intrusiones) con Wazuh (Plataforma de Monitoreo y Seguridad). La integración permite
+            centralizar la detección de amenazas de red y correlacionar eventos en una plataforma de seguridad
+            unificada.</p>
 
         <h3>Beneficios Clave</h3>
         <div class="grid-3">
@@ -687,33 +694,34 @@ Guia-Suricata-Wazuh.html
 
         <h3>Flujo de Datos</h3>
         <div class="architecture">
-┌─────────────────────────────────────┐
-│   ENDPOINT CON SURICATA             │
-│   Tráfico de Red → [Suricata IDS]   │
-│         ↓                            │
-│    /var/log/suricata/eve.json       │
-└──────────────┬──────────────────────┘
-               │ (Lectura local)
-               ↓
-┌──────────────────────────────────────┐
-│   WAZUH AGENT (Mismo Endpoint)      │
-│   Lee eve.json → Parsea JSON        │
-│   Envía a Manager (TCP 1514)        │
-└──────────────┬──────────────────────┘
-               │ (SSL/TLS)
-               ↓
-┌──────────────────────────────────────┐
-│   WAZUH MANAGER (Central)           │
-│   Recibe → Decodifica JSON →        │
-│   Aplica Reglas → Dashboard         │
-└──────────────────────────────────────┘
+            ┌─────────────────────────────────────┐
+            │ ENDPOINT CON SURICATA │
+            │ Tráfico de Red → [Suricata IDS] │
+            │ ↓ │
+            │ /var/log/suricata/eve.json │
+            └──────────────┬──────────────────────┘
+            │ (Lectura local)
+            ↓
+            ┌──────────────────────────────────────┐
+            │ WAZUH AGENT (Mismo Endpoint) │
+            │ Lee eve.json → Parsea JSON │
+            │ Envía a Manager (TCP 1514) │
+            └──────────────┬──────────────────────┘
+            │ (SSL/TLS)
+            ↓
+            ┌──────────────────────────────────────┐
+            │ WAZUH MANAGER (Central) │
+            │ Recibe → Decodifica JSON → │
+            │ Aplica Reglas → Dashboard │
+            └──────────────────────────────────────┘
         </div>
 
         <h3>Componentes Principales</h3>
         <div class="grid-2">
             <div class="card">
                 <h4>Suricata (Fuente)</h4>
-                <p>Herramienta de detección de intrusiones (IDS) que analiza tráfico de red en tiempo real y genera alertas en formato JSON.</p>
+                <p>Herramienta de detección de intrusiones (IDS) que analiza tráfico de red en tiempo real y genera
+                    alertas en formato JSON.</p>
                 <p><strong>Función:</strong> Capturar y analizar paquetes</p>
             </div>
             <div class="card">
@@ -723,12 +731,14 @@ Guia-Suricata-Wazuh.html
             </div>
             <div class="card">
                 <h4>Wazuh Manager (Procesador)</h4>
-                <p>Servidor central que recibe eventos, aplica decoders y reglas, y correlaciona para detección de amenazas complejas.</p>
+                <p>Servidor central que recibe eventos, aplica decoders y reglas, y correlaciona para detección de
+                    amenazas complejas.</p>
                 <p><strong>Función:</strong> Procesar y correlacionar</p>
             </div>
             <div class="card">
                 <h4>Dashboard (Visualización)</h4>
-                <p>Interfaz web que presenta alertas, permite filtrado avanzado y facilita threat hunting profesional.</p>
+                <p>Interfaz web que presenta alertas, permite filtrado avanzado y facilita threat hunting profesional.
+                </p>
                 <p><strong>Función:</strong> Visualizar y analizar</p>
             </div>
         </div>
@@ -742,7 +752,7 @@ Guia-Suricata-Wazuh.html
         </h2>
 
         <h3>Suricata en Ubuntu 22.04</h3>
-        
+
         <div class="step">
             <div class="step-number">1</div>
             <div class="step-content">
@@ -778,7 +788,8 @@ Guia-Suricata-Wazuh.html
 
         <div class="card warning">
             <h4>⚠️ Para CentOS/RHEL</h4>
-            <p>Usa <span class="inline-code">dnf copr enable @oisf/suricata-6.0</span> en lugar del repositorio PPA. Consulta la guía completa en PDF para pasos detallados.</p>
+            <p>Usa <span class="inline-code">dnf copr enable @oisf/suricata-6.0</span> en lugar del repositorio PPA.
+                Consulta la guía completa en PDF para pasos detallados.</p>
         </div>
     </section>
 
@@ -790,7 +801,7 @@ Guia-Suricata-Wazuh.html
         </h2>
 
         <h3>Configurar suricata.yaml</h3>
-        
+
         <h4>Paso 1: Hacer Backup</h4>
         <pre><code>sudo cp /etc/suricata/suricata.yaml /etc/suricata/suricata.yaml.backup</code></pre>
 
@@ -806,7 +817,7 @@ Guia-Suricata-Wazuh.html
         <h4>Paso 4: Especificar Interfaz de Red</h4>
         <p>Primero, identifica tu interfaz:</p>
         <pre><code>ip addr</code></pre>
-        
+
         <p>Luego configura en <span class="inline-code">suricata.yaml</span>:</p>
         <pre><code>af-packet:
   - interface: enp0s3  # Cambiar según tu interfaz
@@ -823,6 +834,163 @@ Guia-Suricata-Wazuh.html
         - dns
         - tls
         - flow</code></pre>
+        <!-- Configuration Section -->
+        <h4>Paso 6: Habilitar Community ID</h4>
+        <pre><code>community-id: true</code></pre>
+        <h2>
+            <span class="icon">📜</span>
+            Gestión de Reglas de Suricata
+        </h2>
+
+        <h3>Configurar y Descargar Reglas</h3>
+
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h4>Crear archivo de reglas deshabilitadas (disable.conf)</h4>
+                <p>Este archivo contiene los SIDs de reglas que causan problemas de duplicados y deben ser
+                    deshabilitadas.</p>
+                <pre><code>sudo nano /etc/suricata/disable.conf</code></pre>
+                <p><strong>Contenido del archivo:</strong></p>
+                <pre><code># Reglas deshabilitadas por problemas de duplicados
+# SIDs de reglas TOR problemáticas (grupos 656-668)
+
+# Rango completo de reglas TOR con duplicados
+2522655
+2522656
+2522657
+2522658
+2522659
+2522660
+2522661
+2522662
+2522663
+2522664
+2522665
+2522666
+2522667
+
+# Si hay más reglas problemáticas, agrégalas aquí
+# Formato: un SID por línea</code></pre>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h4>Crear archivo de configuración de suricata-update</h4>
+                <p>Define las fuentes de reglas y qué reglas deshabilitar automáticamente.</p>
+                <pre><code>sudo nano /etc/suricata/update.yaml</code></pre>
+                <p><strong>Contenido del archivo:</strong></p>
+                <pre><code>sources:
+  - et/open
+
+disable:
+  - sid:2200000-2299999
+  - sid:2522654
+  - sid:2522655
+  - sid:2522656
+  - sid:2522657
+  - sid:2522658
+  - sid:2522659
+  - sid:2522660
+  - sid:2522661
+  - sid:2522662
+  - sid:2522663
+  - sid:2522664
+  - sid:2522665
+  - sid:2522666
+  - sid:2522667</code></pre>
+                <div class="card warning">
+                    <h4>⚠️ Nota sobre et/open</h4>
+                    <p>La fuente <span class="inline-code">et/open</span> es Emerging Threats Open, el conjunto de
+                        reglas gratuito más utilizado para Suricata.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h4>Habilitar fuentes adicionales</h4>
+                <p>Puedes habilitar fuentes adicionales de reglas como malsilo/win-malware:</p>
+                <pre><code>sudo suricata-update enable-source malsilo/win-malware</code></pre>
+                <div class="card warning">
+                    <h4>⚠️ Advertencia</h4>
+                    <p>Algunas fuentes pueden estar obsoletas o no mantenidas. Verifica el estado antes de habilitarlas.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <h4>Descargar y actualizar reglas</h4>
+                <p>Ejecuta suricata-update para descargar las reglas de Emerging Threats:</p>
+                <pre><code># Como usuario suricata (recomendado)
+sudo -u suricata suricata-update
+
+# O como root
+sudo suricata-update</code></pre>
+                <div class="card success">
+                    <h4>✓ Resultado Esperado</h4>
+                    <p>Las reglas se descargarán y se escribirán en:</p>
+                    <ul>
+                        <li><span class="inline-code">/var/lib/suricata/rules/suricata.rules</span></li>
+                        <li><span class="inline-code">/var/lib/suricata/rules/classification.config</span></li>
+                    </ul>
+                    <p>El comando también ejecutará automáticamente <span class="inline-code">suricata -T</span> para
+                        validar las reglas.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+                <h4>Configurar rutas de reglas en suricata.yaml</h4>
+                <p>Verifica que el archivo de configuración esté correctamente configurado:</p>
+                <pre><code>sudo nano /etc/suricata/suricata.yaml</code></pre>
+                <p><strong>Busca y verifica estas secciones:</strong></p>
+                <pre><code># Directorio base de reglas
+default-rule-path: /var/lib/suricata/rules
+
+# Archivos de reglas a cargar
+rule-files:
+  - /etc/suricata/rules/local.rules
+  - suricata.rules</code></pre>
+                <div class="card">
+                    <h4>💡 Explicación</h4>
+                    <ul>
+                        <li><strong>default-rule-path:</strong> Directorio donde Suricata busca archivos de reglas por
+                            defecto</li>
+                        <li><strong>/etc/suricata/rules/local.rules:</strong> Reglas personalizadas locales (ruta
+                            absoluta)</li>
+                        <li><strong>suricata.rules:</strong> Reglas de Emerging Threats (ruta relativa a
+                            default-rule-path)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h3>Actualización Periódica de Reglas</h3>
+        <div class="card success">
+            <h4>🔄 Mantener Reglas Actualizadas</h4>
+            <p>Se recomienda actualizar las reglas regularmente (mensualmente) para mantenerse protegido contra nuevas
+                amenazas:</p>
+            <pre><code># Actualizar reglas manualmente
+sudo suricata-update
+
+# Recargar Suricata sin interrupciones
+sudo systemctl reload suricata</code></pre>
+            <p><strong>Opcional:</strong> Configurar cron para actualización automática:</p>
+            <pre><code># Editar crontab
+sudo crontab -e
+
+# Agregar línea para actualización mensual (primer día del mes a las 2 AM)
+0 2 1 * * /usr/bin/suricata-update && /usr/bin/systemctl reload suricata</code></pre>
+        </div>
 
         <div class="card success">
             <h4>✓ Validar Configuración</h4>
@@ -843,7 +1011,8 @@ Guia-Suricata-Wazuh.html
 
         <div class="card danger">
             <h4>⚠️ Importante</h4>
-            <p>La ruta <span class="inline-code">/var/log/suricata/eve.json</span> debe ser EXACTA. Cualquier discrepancia causará que el agente no encuentre el archivo.</p>
+            <p>La ruta <span class="inline-code">/var/log/suricata/eve.json</span> debe ser EXACTA. Cualquier
+                discrepancia causará que el agente no encuentre el archivo.</p>
         </div>
     </section>
 
@@ -898,7 +1067,7 @@ Guia-Suricata-Wazuh.html
         <div class="card warning">
             <h4>Síntoma</h4>
             <p>Archivo no existe o muestra 0 líneas</p>
-            
+
             <h4>Solución</h4>
             <pre><code># Verificar que Suricata está ejecutándose
 sudo systemctl status suricata
@@ -921,7 +1090,7 @@ sudo systemctl restart suricata</code></pre>
         <div class="card danger">
             <h4>Síntoma</h4>
             <p><span class="inline-code">[ERRCODE: SC_ERR_AFP_CREATE(190)] - Unable to find iface eth0</span></p>
-            
+
             <h4>Solución</h4>
             <pre><code># Listar interfaces reales
 ip addr show
@@ -940,7 +1109,7 @@ sudo systemctl restart suricata</code></pre>
         <div class="card danger">
             <h4>Síntoma</h4>
             <p><span class="inline-code">ERROR: Cannot read file: /var/log/suricata/eve.json</span></p>
-            
+
             <h4>Solución</h4>
             <pre><code># Verificar permisos
 ls -l /var/log/suricata/eve.json
@@ -1050,7 +1219,8 @@ sudo systemctl restart wazuh-agent</code></pre>
     <footer>
         <p><strong>Guía Profesional: Integración Suricata + Wazuh</strong></p>
         <p>Documento técnico versión 1.0 | Actualizado: Noviembre 28, 2025</p>
-        <p style="font-size: 0.9rem; margin-top: 1rem;">Para equipos de seguridad defensiva, SOC y administradores de sistemas</p>
+        <p style="font-size: 0.9rem; margin-top: 1rem;">Para equipos de seguridad defensiva, SOC y administradores
+            de sistemas</p>
         <div class="footer-links">
             <a href="#intro">Inicio</a>
             <a href="#arquitectura">Arquitectura</a>
@@ -1062,4 +1232,5 @@ sudo systemctl restart wazuh-agent</code></pre>
     </footer>
 
 </body>
+
 </html>
